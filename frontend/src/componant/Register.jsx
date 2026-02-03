@@ -7,7 +7,7 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    role: 'user', // Default role set to 'user'
+    role: 'user', // Default role
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,10 +24,15 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await registerUser(formData);
+      console.log('Sending registration data:', formData); // Debug: check what is sent
+
+      const response = await registerUser(formData);
+      console.log('Registration response:', response); // Debug: see backend reply
+
       alert('Registration successful! Please login.');
       navigate('/login');
     } catch (err) {
+      console.error('Registration error:', err.response?.data); // Debug: see exact error
       setError(err.response?.data?.message || 'Registration failed. Try again.');
     } finally {
       setLoading(false);
@@ -47,13 +52,13 @@ const Register = () => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-lg">
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
+          <div className="space-y-5">
             {/* Full Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -119,13 +124,13 @@ const Register = () => {
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-4">
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ${
-                loading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-md'
-              }`}
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white ${
+                loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200`}
             >
               {loading ? (
                 <span className="flex items-center">
