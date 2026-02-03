@@ -1,3 +1,4 @@
+// src/app.js
 import express from 'express';
 import cors from 'cors';
 import { protect, adminOnly } from './middleware/auth.js';
@@ -8,23 +9,26 @@ import { getAllUsers } from './controllers/authController.js';
 
 const app = express();
 
-// CORS
+// CORS - Only allow your real frontend + localhost
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+    // Allow your deployed frontend
+    if (origin === 'https://tasknew1.netlify.app') {
       return callback(null, true);
     }
 
-    const allowedOrigins = [
-      'https://your-app.vercel.app',
-      'https://your-frontend-domain.com',
-    ];
-
-    if (allowedOrigins.includes(origin)) {
+    // Allow localhost for development (all ports)
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
       return callback(null, true);
     }
 
-    callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    // Allow no origin (Postman, curl, etc.)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    // Block everything else
+    return callback(new Error(`CORS policy: origin ${origin} not allowed`));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
